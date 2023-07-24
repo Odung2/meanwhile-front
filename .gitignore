@@ -1,12 +1,5 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 build
-android
 .idea
 .dart_tool
-ios
-linux
-macos
-test
-web
-windows
