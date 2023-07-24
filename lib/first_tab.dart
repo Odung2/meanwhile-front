@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:line_icons/line_icons.dart';
 
 class TimelineItem {
   final String title;
@@ -10,14 +7,54 @@ class TimelineItem {
   TimelineItem({required this.title, required this.description});
 }
 
-class VerticalTimeline extends StatefulWidget {
+class TimelineScreen extends StatefulWidget {
   @override
-  _VerticalTimelineState createState() => _VerticalTimelineState();
+  _TimelineScreenState createState() => _TimelineScreenState();
 }
 
-class _VerticalTimelineState extends State<VerticalTimeline> {
+class _TimelineScreenState extends State<TimelineScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Timeline Screen"),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: "Tab 1"),
+            Tab(text: "Tab 2"),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Tab1Content(),
+          Tab2Content(),
+        ],
+      ),
+    );
+  }
+}
+
+class Tab1Content extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Add the content for Tab 1 here
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -57,8 +94,24 @@ class _VerticalTimelineState extends State<VerticalTimeline> {
   }
 }
 
-
-
+class Tab2Content extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Add content for Tab 2 here
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Center(
+            child: Text(
+              "Content for Tab 2",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class TimelineTile extends StatefulWidget {
   final String title;
@@ -77,17 +130,16 @@ class _TimelineTileState extends State<TimelineTile> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // Set mainAxisSize to MainAxisSize.min
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
               children: [
                 Container(
-                  width: 18,
-                  height: 18,
+                  width: 16,
+                  height: 16,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.grey,
+                    color: Colors.grey, // Add your desired color for the bullet point
                   ),
                   margin: EdgeInsets.only(top: 8),
                 ),
@@ -98,20 +150,26 @@ class _TimelineTileState extends State<TimelineTile> {
                 ),
               ],
             ),
-            SizedBox(width: 20),
+            SizedBox(width: 20,),
             Expanded(
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 5,),
-                  Text(
-                    widget.title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    widget.description,
-                    style: TextStyle(fontSize: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          widget.description,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -122,9 +180,6 @@ class _TimelineTileState extends State<TimelineTile> {
     );
   }
 }
-
-
-
 
 List<TimelineItem> timelineData = [
   TimelineItem(title: "Event 1", description: "Description 1"),
