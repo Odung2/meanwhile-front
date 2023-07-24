@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/first_tab.dart';
+import 'package:flutter_application_1/search.dart';
 import 'package:flutter_application_1/short.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
@@ -36,6 +37,7 @@ class _FirstState extends State<FirstPage> {
   late final List<Widget> _widgetOptions = <Widget>[
     ShortVideoPlatform(),
     VerticalTimeline(),
+    SearchScreen(),
   ];
 
   int _selectedIndex = 0;
