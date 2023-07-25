@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/first_tab.dart';
+import 'package:flutter_application_1/vertical_timeline.dart';
 import 'package:flutter_application_1/scraped.dart';
 import 'package:flutter_application_1/search.dart';
 import 'package:flutter_application_1/short.dart';

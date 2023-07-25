@@ -60,37 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
       onSignup: (SignUpData data) async =>
           _authOperation(logIn.LoginFunctions(context).onSignup(data)),
       // onForgotPassword: _onForgotPassword,
-      logo: Image.asset('assets/images/fire2.gif'),
+      logo: Image.asset('assets/images/logo.gif',),
       backgroundImage: 'assets/images/loginbackground.jpg',
       signUpMode: SignUpModes.both,
       socialLogins: _socialLogins(context),
       loginDesktopTheme: _desktopTheme,
       loginMobileTheme: _mobileTheme,
       loginTexts: _loginTexts,
-      passwordValidator: ValidatorModel(
-          checkUpperCase: false, checkNumber: true,
-          // checkUpperCase: false, checkNumber: false, checkLowerCase: false, checkSpace: false, length: 1,
-          validatorCallback: (String? password) => "비밀번호는 문자와 숫자를 모두 포함하고, 6자 이상이어야 합니다"),
-      // nameValidator: ValidatorModel(
-      //     checkUpperCase: false, checkNumber: false, checkLowerCase: false, checkSpace: false,
-      //     validatorCallback: (String? name) => "옳지 않은 이름 양식입니다."),
-      nameValidator: ValidatorModel(
-          customValidator: (name) {
-            return "$name, I love you";
-          },
-          validatorCallback: (String? name) => "옳지 않은 이름 양식입니다."),
-      emailValidator: ValidatorModel(
-          validatorCallback: (String? email) => '옳지 않은 이메일 양식입니다'),
-      // changeLanguageCallback: (LanguageOption? _language) {
-      //   if (_language != null) {
-      //     DialogBuilder(context).showResultDialog(
-      //         'Successfully changed the language to: ${_language.value}.');
-      //     if (mounted) setState(() => language = _language);
-      //   }
-      // },
-      // changeLangDefaultOnPressed: () async => _operation?.cancel(),
-      // languageOptions: _languageOptions,
-      // selectedLanguage: language,
       initialMode: currentMode,
       onAuthModeChange: (AuthMode newMode) async {
         currentMode = newMode;
@@ -129,15 +105,16 @@ class _LoginScreenState extends State<LoginScreen> {
   /// according to your design preferences for *MOBILE* view.
   /// You can also set some additional display options such as [showLabelTexts].
   LoginViewTheme get _mobileTheme => LoginViewTheme(
-    logoPadding: const EdgeInsets.all(20.0),
-    logoSize: const Size(180, 180),
+    logoSize: const Size(500, 400),
     welcomeTitleStyle: const TextStyle(
       fontFamily: "mainfont",
+      fontWeight: FontWeight.bold,
       fontSize: 40,
     ),
     welcomeDescriptionStyle: const TextStyle(
       fontFamily: "mainfont",
-      fontSize: 25,
+      fontWeight: FontWeight.bold,
+      fontSize: 30,
     ),
     changeActionTextStyle: const TextStyle(
       fontFamily: "mainfont",
