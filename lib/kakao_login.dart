@@ -25,7 +25,7 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  final url = "https://kauth.kakao.com/oauth/authorize?client_id=54747942f208486425c7e37cb211a42f&redirect_uri=http://172.10.5.81:80/kakao/sign_in&response_type=code";
+  final url = "https://kauth.kakao.com/oauth/authorize?client_id=54747942f208486425c7e37cb211a42f&redirect_uri=http://172.10.5.81:443/kakao/sign_in&response_type=code";
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _WebViewPageState extends State<WebViewPage> {
         initialOptions: InAppWebViewGroupOptions(
             android: AndroidInAppWebViewOptions(useHybridComposition: true)),
         onLoadStop: (controller, url) async {
-          if(url.toString().startsWith("http://172.10.5.81:80/kakao")) {
+          if(url.toString().startsWith("http://172.10.5.81:443/kakao")) {
             Uri uri = Uri.parse(url.toString());
             String? data = uri.queryParameters['data'];
 
