@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+const String url = "http://localhost:443";
 
 void main() {
   runApp(MaterialApp(
@@ -8,25 +13,37 @@ void main() {
 
 class ShortVideoObject {
   final String title;
-  final String imageUrl;
+  final String summary;
+  final String url;
+  final String refs;
+  final String date;
 
-  ShortVideoObject({required this.title, required this.imageUrl});
+  ShortVideoObject({required this.title, required this.summary, required this.url, required this.refs, required this.date});
+
+  factory ShortVideoObject.fromJson(Map<String, dynamic> json) {
+    return ShortVideoObject(
+      title: json['title'],
+      url: json['url'],
+      summary: json['summary'],
+      refs: json['refs'],
+      date: json['date'],
+    );
+  }
 }
 
-List<ShortVideoObject> videoObjects = [
-  ShortVideoObject(
-    title: "Title 1",
-    imageUrl: "assets/images/among1.png",
-  ),
-  ShortVideoObject(
-    title: "Title 2",
-    imageUrl: "assets/images/among2.png",
-  ),
-  ShortVideoObject(
-    title: "Title 3",
-    imageUrl: "assets/images/among3.png",
-  ),
-];
+Future<List<ShortVideoObject>> fetchVideoObjects() async {
+  final response = await http.get(Uri.parse('$url/trending'));
+
+  if (response.statusCode == 200) {
+    // If the server returns a successful response, parse the JSON
+    final data = json.decode(response.body);
+    return List<ShortVideoObject>.from(data.map((item) => ShortVideoObject.fromJson(item)));
+  } else {
+    // If the server did not return a 200 OK response, throw an exception
+    throw Exception('Failed to load video objects');
+  }
+}
+
 
 class ShortVideoPlatform extends StatefulWidget {
   @override
@@ -36,11 +53,25 @@ class ShortVideoPlatform extends StatefulWidget {
 class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   late PageController _pageController;
   int _currentIndex = 0;
+  List<ShortVideoObject> videoObjects = [];
+
+  Future<void> fetchVideoData() async {
+    try {
+      List<ShortVideoObject> data = await fetchVideoObjects();
+      setState(() {
+        videoObjects = data;
+      });
+    } catch (e) {
+      // Handle error if fetching data fails
+      print('Error fetching video data: $e');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
+    fetchVideoData();
   }
 
   @override
@@ -147,7 +178,7 @@ class VideoObjectScreen extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Image.asset(
-            videoObject.imageUrl,
+            videoObject.url,
             width: 200, // Adjust the image width as needed
             height: 200, // Adjust the image height as needed
           ),
@@ -156,3 +187,4 @@ class VideoObjectScreen extends StatelessWidget {
     );
   }
 }
+
