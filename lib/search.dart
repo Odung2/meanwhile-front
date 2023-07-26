@@ -7,7 +7,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 
 
-String baseUrl = "http://172.10.5.81:443";
+String baseUrl = "http://127.0.0.1:443";
 
 class Article {
   // final String title;
@@ -51,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final queryParams = {
       'keywords': keywords.isNotEmpty ? keywords : 'default_keywords_here' // 검색어가 비어있으면 기본 값 전달
     };
-    final uri = Uri.http('172.10.5.81:443', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
+    final uri = Uri.http('127.0.0.1:443', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
     final request = '$baseUrl/articles?keywords="$keywords"';
     try {
       print(request);
