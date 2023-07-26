@@ -6,6 +6,12 @@ import 'package:flutter_application_1/short.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
+void main() {
+  runApp(MaterialApp(
+    home: FirstPage(),
+  ));
+}
+
 class FirstPage extends StatefulWidget {
   const FirstPage({Key? key}) : super(key: key);
 
