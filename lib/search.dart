@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -16,7 +17,7 @@ class Article {
   final List<String> references;
   final List<String> refTitle;
   final String imageLink;
-  bool isLiked; // 새로 추가된 속성
+  final List<bool> isLiked;
 // Article({required this.title, required this.summary, required this.publishTime, required this.references, required this.imageLink});
   Article({
     required this.summary,
@@ -24,10 +25,16 @@ class Article {
     required this.references,
     required this.refTitle,
     required this.imageLink,
-    // required this.isLiked, // 기본값은 false로 설정
-    this.isLiked=false
-  });
+    List<bool>? isLiked,
+  }): isLiked = List.filled(refTitle.length, false); // Initialize isLiked with all false values if isLiked is not provided;
 
+}
+
+class LikeStatus {
+  final String refTitle;
+  bool isLiked;
+
+  LikeStatus({required this.refTitle, required this.isLiked});
 }
 
 class SearchScreen extends StatefulWidget {
@@ -176,10 +183,27 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-class ArticleDetailsScreen extends StatelessWidget {
+
+class ArticleDetailsScreen extends StatefulWidget {
   final Article article;
 
   ArticleDetailsScreen({required this.article});
+
+  @override
+  _ArticleDetailsScreenState createState() => _ArticleDetailsScreenState();
+}
+// List<LikeStatus> _likeStatusList = [];
+
+class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    // 기사의 참조 제목과 좋아요 상태를 LikeStatus 객체로 변환하여 리스트에 추가
+    // _likeStatusList = widget.article.refTitle
+    //     .map((refTitle) => LikeStatus(refTitle: refTitle, isLiked: isLiked))
+    //     .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,22 +215,27 @@ class ArticleDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Title:"N/A"}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text('Summary: ${article.summary ?? "N/A"}'),
-          Text('Publish Time: ${article.publishTime ?? "N/A"}'),
-          SizedBox(height: 16),
-          Text(
-            'References:',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+              'Title:"N/A"}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text('Summary: ${widget.article.summary}'),
+            Text('Publish Time: ${widget.article.publishTime ?? "N/A"}'),
+            SizedBox(height: 16),
+            Text(
+              'References:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           Expanded(
             child: ListView.builder(
-              itemCount: article.references?.length ?? 0,
+              itemCount: widget.article.references?.length ?? 0,
               itemBuilder: (context, index) {
-                final refTitle = article.refTitle?[index] ?? "N/A";
-                final reference = article.references?[index] ?? "N/A";
+                final refTitle = widget.article.refTitle?[index] ?? "N/A";
+                final reference = widget.article.references?[index] ?? "N/A";
+                // final likeStatus = _likeStatusList.firstWhere(
+                //       (status) => status.refTitle == refTitle,
+                //   orElse: () => LikeStatus(refTitle: refTitle),
+                // );
+                final isLiked = widget.article.isLiked[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -215,6 +244,17 @@ class ArticleDetailsScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(refTitle),
                     subtitle: Text(reference),
+                    trailing: IconButton(
+                      icon: Icon(
+                        isLiked
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: isLiked ? Colors.red : null,
+                      ),
+                      onPressed: () {
+                        _toggleLike(index);
+                      },
+                    ),
                   ),
                 );
               },
@@ -225,15 +265,40 @@ class ArticleDetailsScreen extends StatelessWidget {
     );
   }
 
+  Future<String?> getJwtToken() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwtToken');
+  }
+  // ... 이전 코드 생략 ...
   void _openWebView(BuildContext context, String url) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => WebViewScreen(url: url, article: article),
+        builder: (context) => WebViewScreen(url: url, article: widget.article),
       ),
     );
   }
+
+  void _toggleLike(int index) async {
+    setState(() {
+      widget.article.isLiked[index] = !widget.article.isLiked[index]; // 해당 요소의 좋아요 상태를 토글(toggle)하여 변경
+    });
+    if(widget.article.isLiked[index]){
+      // 유저의 jwtUtilToken과 해당 refTitle, references 정보를 서버에 전송
+      final jwtToken = await getJwtToken();
+      final jwtUtilToken = 'YOUR_JWT_TOKEN_HERE'; // 유저의 JWT 토큰을 여기에 넣어주세요.
+      final refTitle = widget.article.refTitle[index];
+      final references = widget.article.references[index];
+      // print(jwtToken);
+      // print(refTitle);
+      // print(references);
+      print("before sendlikedata");
+      sendLikeData(jwtToken, refTitle, references);
+    }
+
+  }
 }
+
 
 class WebViewScreen extends StatefulWidget {
   final Article article;
@@ -258,12 +323,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
     print("Article Liked State: ${widget.article.isLiked}");
   }
   // 빈 하트 버튼을 누르면 호출되는 메서드
-  void _toggleLike() {
-    setState(() {
-      widget.article.isLiked =
-      !widget.article.isLiked; // 좋아요 상태를 토글(toggle)하여 변경
-    });
-  }
+  // void _toggleLike() {
+  //   setState(() {
+  //     widget.article.isLiked =
+  //     !widget.article.isLiked; // 좋아요 상태를 토글(toggle)하여 변경
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -272,17 +337,17 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: Text('Web View'),
         actions: [
           // 빈 하트 버튼 추가
-          IconButton(
-            icon: Icon(
-              widget.article.isLiked
-                  ? Icons.favorite // 좋아요 상태인 경우 빨간색 하트 아이콘
-                  : Icons.favorite_border, // 좋아요 상태가 아닌 경우 빈 하트 아이콘
-              color: widget.article.isLiked
-                  ? Colors.red
-                  : null, // 좋아요 상태인 경우 빨간색으로 표시
-            ),
-            onPressed: _toggleLike, // 빈 하트 버튼을 누르면 _toggleLike 메서드 호출
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     widget.article.isLiked
+          //         ? Icons.favorite // 좋아요 상태인 경우 빨간색 하트 아이콘
+          //         : Icons.favorite_border, // 좋아요 상태가 아닌 경우 빈 하트 아이콘
+          //     color: widget.article.isLiked
+          //         ? Colors.red
+          //         : null, // 좋아요 상태인 경우 빨간색으로 표시
+          //   ),
+          //   onPressed: _toggleLike, // 빈 하트 버튼을 누르면 _toggleLike 메서드 호출
+          // ),
         ],
       ),
       body: InAppWebView(
@@ -299,5 +364,44 @@ class _WebViewScreenState extends State<WebViewScreen> {
         },
       ),
     );
+  }
+}
+
+Future<void> sendLikeData(String? jwtUtilToken, String refTitle, String refLink) async {
+  final url = '$baseUrl/add_bookmark'; // 좋아요 정보를 전송할 엔드포인트 URL
+
+  // final headers = <String, String>{
+  //   'Content-Type': 'application/json; charset=UTF-8',
+  //   'Authorization': 'Bearer $jwtToken'
+  // };
+  // 요청 바디에 담을 데이터를 Map 형태로 준비
+
+  final requestData = {
+    // 'jwtUtilToken': jwtUtilToken,
+    'refTitle': refTitle,
+    'refLink': refLink,
+  };
+  print(requestData);
+  print(json.encode(requestData));
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $jwtUtilToken'
+      },
+      body: json.encode(requestData), // 데이터를 JSON 형태로 인코딩하여 요청에 추가
+    );
+
+    if (response.statusCode == 200) {
+      // 서버로부터 성공적인 응답을 받은 경우
+      print('Like data sent successfully!');
+    } else {
+      // 서버로부터 실패 응답을 받은 경우
+      print('Failed to send like data. Error: ${response.statusCode}');
+    }
+  } catch (e) {
+    // 예외가 발생한 경우
+    print('Error: $e');
   }
 }
