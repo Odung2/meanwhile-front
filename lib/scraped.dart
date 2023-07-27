@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String baseUrl = "http://172.10.5.81:443";
 
@@ -180,6 +181,12 @@ class _ScrapScreenState extends State<ScrapScreen> {
                                   ),
                                 ),
                                 IconButton(
+                                  icon: Icon(Icons.share),
+                                  onPressed: () {
+                                    _shareOnTwitter(item.refLink, item.refTitle);
+                                  },
+                                ),
+                                IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () async {
                                     final confirmDelete = await showDialog<bool>(
@@ -238,7 +245,17 @@ class _ScrapScreenState extends State<ScrapScreen> {
     );
   }
 
-
+  void _shareOnTwitter(String reference, String refTitle) async {
+    // String textToshare = '안녕하세요, 트위터 공유하기 테스트입니다!';
+    String tweetText = "쿠케케켁..트위터공유하기성공\n$refTitle\n$reference"; // Customize the tweet text as desired
+    String twitterUrl = "https://twitter.com/intent/tweet?text=${Uri.encodeComponent(tweetText)}";
+    if (await canLaunch(twitterUrl)) {
+      await launch(twitterUrl);
+    } else {
+      // Handle error if Twitter app or website cannot be launched
+      print("Error launching Twitter");
+    }
+  }
 
 }
 
