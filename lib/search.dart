@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String baseUrl = "http://172.10.5.81:443";
 
@@ -246,16 +247,27 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                   child: ListTile(
                     title: Text(refTitle),
                     subtitle: Text(reference),
-                    trailing: IconButton(
-                      icon: Icon(
-                        isLiked
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: isLiked ? Colors.red : null,
-                      ),
-                      onPressed: () {
-                        _toggleLike(index);
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isLiked ? Colors.red : null,
+                          ),
+                          onPressed: () {
+                            _toggleLike(index);
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.share),
+                          onPressed: () {
+                            _shareOnTwitter(reference, refTitle);
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -281,6 +293,7 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
     );
   }
 
+
   void _toggleLike(int index) async {
     setState(() {
       widget.article.isLiked[index] = !widget.article.isLiked[index]; // 해당 요소의 좋아요 상태를 토글(toggle)하여 변경
@@ -298,6 +311,19 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
       sendLikeData(jwtToken, refTitle, references);
     }
 
+  }
+
+
+  void _shareOnTwitter(String reference, String refTitle) async {
+    // String textToshare = '안녕하세요, 트위터 공유하기 테스트입니다!';
+    String tweetText = "쿠케케켁..트위터공유하기성공\n$refTitle\n$reference"; // Customize the tweet text as desired
+    String twitterUrl = "https://twitter.com/intent/tweet?text=${Uri.encodeComponent(tweetText)}";
+    if (await canLaunch(twitterUrl)) {
+      await launch(twitterUrl);
+    } else {
+      // Handle error if Twitter app or website cannot be launched
+      print("Error launching Twitter");
+    }
   }
 }
 
@@ -331,18 +357,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
       appBar: AppBar(
         title: Text('Web View'),
         actions: [
-          // 빈 하트 버튼 추가
-          // IconButton(
-          //   icon: Icon(
-          //     widget.article.isLiked
-          //         ? Icons.favorite // 좋아요 상태인 경우 빨간색 하트 아이콘
-          //         : Icons.favorite_border, // 좋아요 상태가 아닌 경우 빈 하트 아이콘
-          //     color: widget.article.isLiked
-          //         ? Colors.red
-          //         : null, // 좋아요 상태인 경우 빨간색으로 표시
-          //   ),
-          //   onPressed: _toggleLike, // 빈 하트 버튼을 누르면 _toggleLike 메서드 호출
-          // ),
         ],
       ),
       body: InAppWebView(
@@ -364,12 +378,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
 Future<void> sendLikeData(String? jwtUtilToken, String refTitle, String refLink) async {
   final url = '$baseUrl/add_bookmark'; // 좋아요 정보를 전송할 엔드포인트 URL
-
-  // final headers = <String, String>{
-  //   'Content-Type': 'application/json; charset=UTF-8',
-  //   'Authorization': 'Bearer $jwtToken'
-  // };
-  // 요청 바디에 담을 데이터를 Map 형태로 준비
 
   final requestData = {
     // 'jwtUtilToken': jwtUtilToken,
