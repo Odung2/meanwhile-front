@@ -18,6 +18,7 @@ class Article {
   final List<String> refTitle;
   final String imageLink;
   final List<bool> isLiked;
+  final int langauge;
 // Article({required this.title, required this.summary, required this.publishTime, required this.references, required this.imageLink});
   Article({
     required this.summary,
@@ -25,6 +26,7 @@ class Article {
     required this.references,
     required this.refTitle,
     required this.imageLink,
+    required this.langauge,
     List<bool>? isLiked,
   }): isLiked = List.filled(refTitle.length, false); // Initialize isLiked with all false values if isLiked is not provided;
 
@@ -44,6 +46,10 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   List<Article> _articles = [];
+  List<Article> _koreanArticles = [];
+  List<Article> _allArticles = [];
+  List<Article> _englishArticles = [];
+  int _selectedLanguage = 0; // 0 for Korean, 1 for English, and 2 for All
 
   TextEditingController _searchController = TextEditingController(); // 검색어를 입력받을 컨트롤러
   @override
@@ -81,11 +87,15 @@ class _SearchScreenState extends State<SearchScreen> {
             references: List<String>.from(item['references'] ?? []),
             refTitle: List<String>.from (item['refTitles'] ?? []),
             imageLink: item['imageLink'],
+            langauge: item['language'],
           );
           articles.add(article);
         }
         setState(() {
           _articles = articles;
+          _koreanArticles = articles.where((article) => article.langauge == 0).toList();
+          _allArticles = articles;
+          _englishArticles = articles.where((article) => article.langauge == 1).toList();
         });
       } else {
         // Handle error if the server request fails
@@ -138,81 +148,204 @@ class _SearchScreenState extends State<SearchScreen> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       // appBar: AppBar(title: Text('Article Search')),
-      body: Column(
-        children: [
-          // 검색창
-          Container(
-            height: height*0.05,
-          ),
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: '검색어를 입력하세요',
-                border: OutlineInputBorder(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // 검색창
+            Container(
+              height: height*0.05,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(10, height *0.02, 0, height *0.02),
+                child: Text(
+                  "Search topic 😽",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              onSubmitted: (keyword) {
-                _fetchArticles(keyword); // 검색 수행
-              },
             ),
-          ),
-          // 검색 버튼
-          // ElevatedButton(
-          //   // onPressed: _fetchArticles,
-          //   onPressed: (){
-          //     // 검색 버튼이 눌렸을 때 검색 수행
-          //     final keywords = _searchController.text;
-          //     // _searchArticles(keywords);
-          //     _fetchArticles(keywords);
-          //   },
-          //   child: Text('검색'),
-          // ),
-          // 검색 결과 출력
-          Expanded(
-            child: FutureBuilder(
-              future: Future.value(_articles),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasData) {
-                  // 데이터가 있을 경우 ListView.builder로 검색 결과 표시
-                  return _buildTimeline(_articles);
-                } else {
-                  // 데이터가 없을 경우 빈 화면 표시
-                  return Center(child: Text('검색 결과가 없습니다.'));
-                }
-              },
+            Padding(
+              padding: EdgeInsets.all(3.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: '검색어를 입력하세요',
+                  border: OutlineInputBorder(),
+                ),
+                onSubmitted: (keyword) {
+                  _fetchArticles(keyword); // 검색 수행
+                },
+              ),
             ),
-          ),
-          // Expanded(
-          //   child: _buildTimeline(),
-          // ),
-        ],
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  flex:1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Add your onPressed logic for Button 1 here
+                      setState(() {
+                        _selectedLanguage = 0;
+                      });
+                    },
+                    child: Text('국내 언론'),
+                    style: ElevatedButton.styleFrom(
+                      primary: _selectedLanguage == 0 ? Colors.blueGrey : Colors.white24,
+                    ),
+                  ),
+                  // style: ElevatedButton.styleFrom(
+                  //   primary: _selectedLanguage == 0 ? Colors.blue : null,
+                  // ),
+                ),
+                Expanded(
+                  flex:1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Add your onPressed logic for Button 1 here
+                      setState(() {
+                        _selectedLanguage = 2;
+                      });
+                    },
+                    child: Text('통합'),
+                    style: ElevatedButton.styleFrom(
+                      primary: _selectedLanguage == 2 ? Colors.blueGrey : Colors.white24,
+                    ),
+
+                  ),
+                ),
+                Expanded(
+                  flex:1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Add your onPressed logic for Button 2 here
+                      setState(() {
+                        _selectedLanguage = 1;
+                      });
+                    },
+                    child: Text('외신'),
+                    style: ElevatedButton.styleFrom(
+                      primary: _selectedLanguage == 1 ? Colors.blueGrey : Colors.white24,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // 검색 결과 출력
+            Expanded(
+              child: FutureBuilder(
+                future: Future.value(_articles),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasData) {
+                    // 데이터가 있을 경우 ListView.builder로 검색 결과 표시
+                    return _buildTimeline(_articles);
+                  } else {
+                    // 데이터가 없을 경우 빈 화면 표시
+                    return Center(child: Text('검색 결과가 없습니다.'));
+                  }
+                },
+              ),
+            ),
+            // Expanded(
+            //   child: _buildTimeline(),
+            // ),
+          ],
+        ),
       ),
     );
   }
 
 
   Widget _buildTimeline(_articles) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    List<Article> displayedArticles;
+
+    if (_selectedLanguage == 0) {
+      displayedArticles = _koreanArticles;
+    } else if (_selectedLanguage == 1) {
+      displayedArticles = _englishArticles;
+    } else {
+      displayedArticles = _allArticles;
+    }
+
+
     return ListView.builder(
-      itemCount: _articles.length,
+      // itemCount: _articles.length,
+      itemCount: displayedArticles.length,
       itemBuilder: (context, index) {
-        final article = _articles[index];
-        return Card(
-          child: ListTile(
-            // title: Text(article.title),
-            subtitle: Text(article.summary),
-            trailing: Text(article.publishTime),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
+        // final article = _articles[index];
+        final article = displayedArticles[index];
+        final alignment = article.langauge ==0
+            ? Alignment.centerLeft
+            : Alignment.centerRight;
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                   builder: (context) => ArticleDetailsScreen(article: article),
+                  ),
+                );
+              },
+              child: Container(
+                width: width,
+                alignment: alignment == Alignment.centerLeft
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+                child: Card(
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment:alignment == Alignment.centerLeft
+                          ? CrossAxisAlignment.start
+                          :  CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "${article.summary}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          SizedBox(
+                            height: height*0.01,
+                          ),
+                          Text(
+                            "${article.publishTime}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          // Text(
+                          //   " 참고 기사 더보기",
+                          //   style: const TextStyle(
+                          //     // fontWeight: FontWeight.bold,
+                          //     fontSize: 12,
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+          ],
         );
       },
     );
