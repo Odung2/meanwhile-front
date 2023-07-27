@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-const String url = "http://localhost:443";
+const String url = "http://172.10.5.135:443";
 
 void main() {
   runApp(MaterialApp(
@@ -18,7 +17,13 @@ class ShortVideoObject {
   final String refs;
   final String date;
 
-  ShortVideoObject({required this.title, required this.summary, required this.url, required this.refs, required this.date});
+  ShortVideoObject({
+    required this.title,
+    required this.summary,
+    required this.url,
+    required this.refs,
+    required this.date,
+  });
 
   factory ShortVideoObject.fromJson(Map<String, dynamic> json) {
     return ShortVideoObject(
@@ -35,15 +40,14 @@ Future<List<ShortVideoObject>> fetchVideoObjects() async {
   final response = await http.get(Uri.parse('$url/trending'));
 
   if (response.statusCode == 200) {
-    // If the server returns a successful response, parse the JSON
     final data = json.decode(response.body);
-    return List<ShortVideoObject>.from(data.map((item) => ShortVideoObject.fromJson(item)));
+    return List<ShortVideoObject>.from(
+      data.map((item) => ShortVideoObject.fromJson(item)),
+    );
   } else {
-    // If the server did not return a 200 OK response, throw an exception
     throw Exception('Failed to load video objects');
   }
 }
-
 
 class ShortVideoPlatform extends StatefulWidget {
   @override
@@ -54,16 +58,18 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   late PageController _pageController;
   int _currentIndex = 0;
   List<ShortVideoObject> videoObjects = [];
+  bool isLoading = true;
 
   Future<void> fetchVideoData() async {
     try {
       List<ShortVideoObject> data = await fetchVideoObjects();
       setState(() {
         videoObjects = data;
+        isLoading = false;
       });
     } catch (e) {
-      // Handle error if fetching data fails
       print('Error fetching video data: $e');
+      isLoading = false;
     }
   }
 
@@ -78,13 +84,20 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
+        onTap: (){
+
+        },
         onDoubleTap: () {
           _scrapCurrentVideo();
         },
         onVerticalDragEnd: (details) {
           _handleVerticalScroll(details.primaryVelocity!);
         },
-        child: PageView.builder(
+        child: isLoading
+            ? Center(
+          child: CircularProgressIndicator(),
+        )
+            : PageView.builder(
           scrollDirection: Axis.vertical,
           controller: _pageController,
           itemCount: videoObjects.length,
@@ -102,10 +115,10 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
                   value = _pageController.page! - index;
                   value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
                 }
-                final double verticalOffset = value * 200; // Adjust the vertical offset as needed
+                final double verticalOffset = value * 200;
                 return Center(
                   child: Transform.translate(
-                    offset: Offset(0, verticalOffset),
+                    offset: Offset(0, 0),
                     child: Opacity(
                       opacity: value,
                       child: Transform.scale(
@@ -147,14 +160,7 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   void _scrapCurrentVideo() {
-    if (videoObjects.isNotEmpty) {
-      setState(() {
-        videoObjects.removeAt(_currentIndex);
-        if (_currentIndex >= videoObjects.length) {
-          _currentIndex = videoObjects.length - 1;
-        }
-      });
-    }
+    print("double tap!!");
   }
 }
 
@@ -165,26 +171,53 @@ class VideoObjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            videoObject.title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double desiredHeight = (screenHeight / 4) * 3;
+
+    return Stack(
+          children: [
+                Positioned(
+                  top: 0,
+                  child: Container(
+                    width: screenWidth,
+                    height: desiredHeight,
+                    child: _buildImage(),
+                  ),
+                ),
+            Positioned(
+              top: desiredHeight,
+              child: Container(
+                width: screenWidth,
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  videoObject.title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 100, // Set a large number of lines
+                  overflow: TextOverflow.ellipsis, // Allow text to wrap with \n if it overflows
+                ),
+              ),
             ),
-          ),
-          SizedBox(height: 16),
-          Image.asset(
-            videoObject.url,
-            width: 200, // Adjust the image width as needed
-            height: 200, // Adjust the image height as needed
-          ),
-        ],
-      ),
+            // Other widgets below the image and title
+          ],
     );
   }
-}
 
+  Widget _buildImage() {
+    if (videoObject.url.startsWith("http")) {
+      return Image.network(
+        videoObject.url,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Image.asset(
+        "assets/images/demo.png", // Replace "demo.png" with the actual asset image path
+        fit: BoxFit.cover,
+      );
+    }
+  }
+
+}
