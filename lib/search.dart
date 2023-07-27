@@ -288,12 +288,8 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
     if(widget.article.isLiked[index]){
       // 유저의 jwtUtilToken과 해당 refTitle, references 정보를 서버에 전송
       final jwtToken = await getJwtToken();
-      final jwtUtilToken = 'YOUR_JWT_TOKEN_HERE'; // 유저의 JWT 토큰을 여기에 넣어주세요.
       final refTitle = widget.article.refTitle[index];
       final references = widget.article.references[index];
-      // print(jwtToken);
-      // print(refTitle);
-      // print(references);
       print("before sendlikedata");
       sendLikeData(jwtToken, refTitle, references);
     }

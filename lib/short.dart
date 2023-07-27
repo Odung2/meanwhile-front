@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String url = "http://172.10.5.135:443";
+
+String baseUrl = "http://172.10.5.81:443";
 
 class ShortVideoObject {
   final String title;
@@ -160,7 +163,7 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   void _scrapCurrentVideo() {
-    print("double tap!!");
+    sendLikeData(videoObjects[_currentIndex].title, videoObjects[_currentIndex].refs);
   }
 }
 
@@ -264,5 +267,41 @@ class _WebViewScreenState extends State<WebViewScreen> {
   }
 }
 
+Future<void> sendLikeData(String refTitle, String refLink) async {
+  final url = '$baseUrl/add_bookmark'; // 좋아요 정보를 전송할 엔드포인트 URL
+  final String? jwtUtilToken = await getJwtToken();
 
+  final requestData = {
+    // 'jwtUtilToken': jwtUtilToken,
+    'refTitle': refTitle,
+    'refLink': refLink,
+  };
+  print(requestData);
+  print(json.encode(requestData));
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $jwtUtilToken'
+      },
+      body: json.encode(requestData), // 데이터를 JSON 형태로 인코딩하여 요청에 추가
+    );
 
+    if (response.statusCode == 200) {
+      // 서버로부터 성공적인 응답을 받은 경우
+      print('Like data sent successfully!');
+    } else {
+      // 서버로부터 실패 응답을 받은 경우
+      print('Failed to send like data. Error: ${response.statusCode}');
+    }
+  } catch (e) {
+    // 예외가 발생한 경우
+    print('Error: $e');
+  }
+}
+
+Future<String?> getJwtToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('jwtToken');
+}
