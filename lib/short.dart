@@ -80,66 +80,140 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   @override
+
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+    fetchVideoData();
+  }
+  @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WebViewScreen(url: videoObjects[_currentIndex].refs),
+      body: Column(
+        children: [
+          // Fixed text at the top
+          Container(
+            height: height*0.02,
+          ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'News Reels 😽',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          );
-        },
-        onDoubleTap: () {
-          _scrapCurrentVideo();
-        },
-        onVerticalDragEnd: (details) {
-          _handleVerticalScroll(details.primaryVelocity!);
-        },
-        child: isLoading
-            ? Center(
-          child: CircularProgressIndicator(),
-        )
-            : PageView.builder(
-          scrollDirection: Axis.vertical,
-          controller: _pageController,
-          itemCount: videoObjects.length,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          itemBuilder: (context, index) {
-            return AnimatedBuilder(
-              animation: _pageController,
-              builder: (context, child) {
-                double value = 1.0;
-                if (_pageController.position.haveDimensions) {
-                  value = _pageController.page! - index;
-                  value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
-                }
-                final double verticalOffset = value * 200;
-                return Center(
-                  child: Transform.translate(
-                    offset: Offset(0, 0),
-                    child: Opacity(
-                      opacity: value,
-                      child: Transform.scale(
-                        scale: value,
-                        child: child,
+          ),
+          Expanded(
+            child: PageView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _pageController,
+              itemCount: videoObjects.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return AnimatedBuilder(
+                  animation: _pageController,
+                  builder: (context, child) {
+                    double value = 1.0;
+                    if (_pageController.position.haveDimensions) {
+                      value = _pageController.page! - index;
+                      value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
+                    }
+                    final double verticalOffset = value * 200;
+                    return Center(
+                      child: Transform.translate(
+                        offset: Offset(0, 0),
+                        child: Opacity(
+                          opacity: value,
+                          child: Transform.scale(
+                            scale: value,
+                            child: child,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
+                  child: Container(child: VideoObjectScreen(videoObject: videoObjects[index])),
                 );
               },
-              child: VideoObjectScreen(videoObject: videoObjects[index]),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     body: GestureDetector(
+  //       onTap: (){
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => WebViewScreen(url: videoObjects[_currentIndex].refs),
+  //           ),
+  //         );
+  //       },
+  //       onDoubleTap: () {
+  //         _scrapCurrentVideo();
+  //       },
+  //       onVerticalDragEnd: (details) {
+  //         _handleVerticalScroll(details.primaryVelocity!);
+  //       },
+  //       child: isLoading
+  //           ? Center(
+  //         child: CircularProgressIndicator(),
+  //       )
+  //           : PageView.builder(
+  //         scrollDirection: Axis.vertical,
+  //         controller: _pageController,
+  //         itemCount: videoObjects.length,
+  //         onPageChanged: (index) {
+  //           setState(() {
+  //             _currentIndex = index;
+  //           });
+  //         },
+  //         itemBuilder: (context, index) {
+  //           return AnimatedBuilder(
+  //             animation: _pageController,
+  //             builder: (context, child) {
+  //               double value = 1.0;
+  //               if (_pageController.position.haveDimensions) {
+  //                 value = _pageController.page! - index;
+  //                 value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
+  //               }
+  //               final double verticalOffset = value * 200;
+  //               return Center(
+  //                 child: Transform.translate(
+  //                   offset: Offset(0, 0),
+  //                   child: Opacity(
+  //                     opacity: value,
+  //                     child: Transform.scale(
+  //                       scale: value,
+  //                       child: child,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //             child: VideoObjectScreen(videoObject: videoObjects[index]),
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _handleVerticalScroll(double velocity) {
     if (velocity < 0 && _currentIndex < videoObjects.length - 1) {
@@ -193,28 +267,34 @@ class _VideoObjectScreenState extends State<VideoObjectScreen> {
     double desiredHeight = (screenHeight / 4) * 3;
 
     return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          child: Container(
-            width: screenWidth,
-            height: desiredHeight,
-            child: _buildImage(),
-          ),
-        ),
-        Positioned(
-          top: desiredHeight,
-          child: Container(
-            width: screenWidth,
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              widget.videoObject.title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 100,
-              overflow: TextOverflow.ellipsis,
+
+          children: [
+            Column(
+              children: [
+
+                Container(
+                  width: screenWidth,
+                  height: desiredHeight,
+                  child: _buildImage(),
+                ),
+                Flexible(
+                  // width: screenWidth,
+                  // padding: EdgeInsets.all(8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      videoObject.title,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      maxLines: 100, // Set a large number of lines
+                      overflow: TextOverflow.ellipsis, // Allow text to wrap with \n if it overflows
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -67,7 +67,8 @@ class _FirstState extends State<FirstPage> {
         children: [
           Scaffold(
             backgroundColor: Colors.white,
-            body: IndexedStack(
+            body:
+            IndexedStack(
               index: _selectedIndex,
               children: _widgetOptions,
             ),

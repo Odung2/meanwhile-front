@@ -163,7 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Text(
                   "Search topic 😽",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
