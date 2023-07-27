@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String baseUrl = "http://172.10.5.81:443";
+String baseUrl = "http://172.10.5.135:443";
 
 class Bookmark {
   final String refLink;
@@ -181,7 +182,10 @@ class _ScrapScreenState extends State<ScrapScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.share),
+                                  icon: Icon(
+                                    FontAwesomeIcons.twitter,
+                                    color: Colors.blue,
+                                  ),
                                   onPressed: () {
                                     _shareOnTwitter(item.refLink, item.refTitle);
                                   },

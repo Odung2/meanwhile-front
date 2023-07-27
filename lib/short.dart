@@ -80,13 +80,6 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   @override
-
-  void initState() {
-    super.initState();
-    _pageController = PageController(initialPage: _currentIndex);
-    fetchVideoData();
-  }
-  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
@@ -267,11 +260,9 @@ class _VideoObjectScreenState extends State<VideoObjectScreen> {
     double desiredHeight = (screenHeight / 4) * 3;
 
     return Stack(
-
           children: [
             Column(
               children: [
-
                 Container(
                   width: screenWidth,
                   height: desiredHeight,
@@ -283,7 +274,7 @@ class _VideoObjectScreenState extends State<VideoObjectScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      videoObject.title,
+                      widget.videoObject.title,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -296,8 +287,6 @@ class _VideoObjectScreenState extends State<VideoObjectScreen> {
                 ),
               ],
             ),
-          ),
-        ),
         if (showFloatingImage)
           Positioned(
             top: desiredHeight/2,

@@ -1,6 +1,7 @@
 // import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -68,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
       'keywords': keywords.isNotEmpty ? keywords : 'default_keywords_here' // 검색어가 비어있으면 기본 값 전달
     };
 
-    final uri = Uri.http('172.10.5.81:443', '/search', queryParams); // 쿼리 파라미터를 포함한 URL 생성
+    final uri = Uri.http('172.10.5.135:443', '/search', queryParams); // 쿼리 파라미터를 포함한 URL 생성
     // final uri = Uri.http('127.0.0.1:8080', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
 
     final request = '$baseUrl/search?query="$keywords"';
@@ -76,8 +77,10 @@ class _SearchScreenState extends State<SearchScreen> {
       print(request);
       final response = await http.get(Uri.parse(request));
       if (response.statusCode == 200) {
-        print(response.body);
+        print(response);
         final jsonData = json.decode(response.body);
+        print("jsondata");
+        print(jsonData);
         List<Article> articles = [];
         for (var item in jsonData) {
           Article article = Article(
@@ -91,6 +94,7 @@ class _SearchScreenState extends State<SearchScreen> {
           );
           articles.add(article);
         }
+        print(articles);
         setState(() {
           _articles = articles;
           _koreanArticles = articles.where((article) => article.langauge == 0).toList();
@@ -429,7 +433,7 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
 
                 SizedBox(height: 16),
                 Text(
-                  '요약문을 만들 때 참고한 기사 보기',
+                  '요약문을 만들 때 참고한 기사 보기 🥸',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -450,32 +454,88 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                   onTap: () {
                     _openWebView(context, reference);
                   },
-                  child: ListTile(
-                    title: Text(refTitle),
-                    subtitle: Text(reference),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            isLiked
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: isLiked ? Colors.red : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                refTitle,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(reference),
+                              SizedBox(height: 8),
+                            ],
                           ),
-                          onPressed: () {
-                            _toggleLike(index);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.share),
-                          onPressed: () {
-                            _shareOnTwitter(reference, refTitle);
-                          },
-                        ),
-                      ],
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  isLiked ? Icons.favorite : Icons.favorite_border,
+                                  color: isLiked ? Colors.red : null,
+                                ),
+                                onPressed: () {
+                                  _toggleLike(index);
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  FontAwesomeIcons.twitter,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  _shareOnTwitter(reference, refTitle);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  )
+                  // ListTile(
+                  //   title: Text(refTitle),
+                  //   subtitle: Text(reference),
+                  //   trailing: Row(
+                  //     mainAxisSize: MainAxisSize.min,
+                  //     children: [
+                  //       IconButton(
+                  //         icon: Icon(
+                  //           isLiked
+                  //               ? Icons.favorite
+                  //               : Icons.favorite_border,
+                  //           color: isLiked ? Colors.red : null,
+                  //         ),
+                  //         onPressed: () {
+                  //           _toggleLike(index);
+                  //         },
+                  //       ),
+                  //       IconButton(
+                  //         icon: Icon(
+                  //           FontAwesomeIcons.twitter,
+                  //           color: Colors.blue,
+                  //         ),
+                  //         onPressed: () {
+                  //           _shareOnTwitter(reference, refTitle);
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 );
               },
             ),

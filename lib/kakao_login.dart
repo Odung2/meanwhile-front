@@ -37,7 +37,7 @@ class _WebViewPageState extends State<WebViewPage> {
         initialOptions: InAppWebViewGroupOptions(
             android: AndroidInAppWebViewOptions(useHybridComposition: true)),
         onLoadStop: (controller, url) async {
-          if(url.toString().startsWith("http://172.10.5.81:443/kakao")) {
+          if(url.toString().startsWith("http://172.10.5.135:443/kakao")) {
             Uri uri = Uri.parse(url.toString());
             String? data = uri.queryParameters['data'];
 
