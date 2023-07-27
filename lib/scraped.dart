@@ -110,7 +110,7 @@ class _ScrapScreenState extends State<ScrapScreen> {
                   child: Text(
                     "My bookmark list 😽",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
