@@ -9,8 +9,8 @@ import 'package:flutter_application_1/first_page.dart';
 import 'dialog_builders.dart';
 import 'kakao_login.dart';
 
-String baseUrl = "http://168.131.151.213:4040";
-
+// String baseUrl = "http://168.131.151.213:4040";
+String baseUrl = "http://172.10.5.81:443";
 
 class LoginFunctions {
   const LoginFunctions(this.context);

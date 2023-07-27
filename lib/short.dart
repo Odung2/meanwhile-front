@@ -1,14 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart' as http;
 
 const String url = "http://172.10.5.135:443";
-
-void main() {
-  runApp(MaterialApp(
-    home: ShortVideoPlatform(),
-  ));
-}
 
 class ShortVideoObject {
   final String title;
@@ -85,7 +80,12 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
     return Scaffold(
       body: GestureDetector(
         onTap: (){
-
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WebViewScreen(url: videoObjects[_currentIndex].refs),
+            ),
+          );
         },
         onDoubleTap: () {
           _scrapCurrentVideo();
@@ -221,3 +221,48 @@ class VideoObjectScreen extends StatelessWidget {
   }
 
 }
+
+class WebViewScreen extends StatefulWidget {
+  final String url;
+
+  WebViewScreen({required this.url});
+
+  @override
+  _WebViewScreenState createState() => _WebViewScreenState();
+}
+
+class _WebViewScreenState extends State<WebViewScreen> {
+  late InAppWebViewController _webViewController;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Web View'),
+        actions: [
+        ],
+      ),
+      body: InAppWebView(
+        initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
+        initialOptions: InAppWebViewGroupOptions(
+          crossPlatform: InAppWebViewOptions(
+            useOnLoadResource: true,
+            mediaPlaybackRequiresUserGesture: false,
+          ),
+        ),
+        onWebViewCreated: (controller) {
+          _webViewController = controller;
+          // _addButtonInWebView();
+        },
+      ),
+    );
+  }
+}
+
+
+

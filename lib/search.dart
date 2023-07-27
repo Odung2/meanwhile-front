@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String baseUrl = "http://172.10.5.81:443";
 
-
-String baseUrl = "http://172.10.5.135:443";
 
 class Article {
   // final String title;
@@ -58,7 +57,10 @@ class _SearchScreenState extends State<SearchScreen> {
     final queryParams = {
       'keywords': keywords.isNotEmpty ? keywords : 'default_keywords_here' // 검색어가 비어있으면 기본 값 전달
     };
-    final uri = Uri.http('172.10.5.135:443', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
+
+    final uri = Uri.http('172.10.5.81:443', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
+    // final uri = Uri.http('127.0.0.1:8080', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
+
     final request = '$baseUrl/articles?keywords="$keywords"';
     try {
       print(request);
@@ -322,13 +324,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
     print("Article article title: ${widget.article.refTitle}");
     print("Article Liked State: ${widget.article.isLiked}");
   }
-  // 빈 하트 버튼을 누르면 호출되는 메서드
-  // void _toggleLike() {
-  //   setState(() {
-  //     widget.article.isLiked =
-  //     !widget.article.isLiked; // 좋아요 상태를 토글(toggle)하여 변경
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
