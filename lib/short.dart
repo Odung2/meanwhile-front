@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -5,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String url = "http://172.10.5.135:443";
-
-String baseUrl = "http://172.10.5.81:443";
+const String baseUrl = "http://172.10.5.81:443";
+bool showFloatingImage = false;
 
 class ShortVideoObject {
   final String title;
@@ -58,6 +59,13 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   List<ShortVideoObject> videoObjects = [];
   bool isLoading = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+    fetchVideoData();
+  }
+
   Future<void> fetchVideoData() async {
     try {
       List<ShortVideoObject> data = await fetchVideoObjects();
@@ -72,6 +80,7 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   @override
+
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
@@ -229,15 +238,28 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
   }
 
   void _scrapCurrentVideo() {
+    setState(() {
+      showFloatingImage = true;
+    });
     sendLikeData(videoObjects[_currentIndex].title, videoObjects[_currentIndex].refs);
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        showFloatingImage = false;
+      });
+    });
   }
 }
 
-class VideoObjectScreen extends StatelessWidget {
+class VideoObjectScreen extends StatefulWidget {
   final ShortVideoObject videoObject;
 
   const VideoObjectScreen({required this.videoObject});
 
+  @override
+  _VideoObjectScreenState createState() => _VideoObjectScreenState();
+}
+
+class _VideoObjectScreenState extends State<VideoObjectScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -245,6 +267,7 @@ class VideoObjectScreen extends StatelessWidget {
     double desiredHeight = (screenHeight / 4) * 3;
 
     return Stack(
+
           children: [
             Column(
               children: [
@@ -273,25 +296,40 @@ class VideoObjectScreen extends StatelessWidget {
                 ),
               ],
             ),
-            // Other widgets below the image and title
-          ],
+          ),
+        ),
+        if (showFloatingImage)
+          Positioned(
+            top: desiredHeight/2,
+            left: desiredHeight/15,
+            child: AnimatedOpacity(
+              opacity: 1.0,
+              duration: Duration(seconds: 1),
+              child: Image.asset(
+                "assets/images/like.gif",
+                width: 300,
+                height: 300,
+              ),
+            ),
+          ),
+        // Other widgets below the image and title
+      ],
     );
   }
 
   Widget _buildImage() {
-    if (videoObject.url.startsWith("http")) {
+    if (widget.videoObject.url.startsWith("http")) {
       return Image.network(
-        videoObject.url,
+        widget.videoObject.url,
         fit: BoxFit.cover,
       );
     } else {
       return Image.asset(
-        "assets/images/demo.png", // Replace "demo.png" with the actual asset image path
+        "assets/images/demo.png",
         fit: BoxFit.cover,
       );
     }
   }
-
 }
 
 class WebViewScreen extends StatefulWidget {
