@@ -135,8 +135,20 @@ class _ShortVideoPlatformState extends State<ShortVideoPlatform> {
                       ),
                     );
                   },
+                child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WebViewScreen(url: videoObjects[_currentIndex].refs),
+                            ),
+                          );
+                        },
+                        onDoubleTap: () {
+                          _scrapCurrentVideo();
+                        },
                   child: Container(child: VideoObjectScreen(videoObject: videoObjects[index])),
-                );
+                ));
               },
             ),
           ),
