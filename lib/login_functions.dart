@@ -11,6 +11,11 @@ import 'kakao_login.dart';
 
 String baseUrl = "http://172.10.5.81:443";
 
+final defaultTextStyle = TextStyle(
+  fontFamily: 'line',
+  fontSize: 16,
+);
+
 class LoginFunctions {
   const LoginFunctions(this.context);
   final BuildContext context;

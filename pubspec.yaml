@@ -87,7 +87,21 @@ flutter:
   fonts:
     - family: mainfont
       fonts:
-        - asset: assets/fonts/mainfont.ttf
+#        - asset: assets/fonts/mainfont.ttf
+        - asset: assets/fonts/LINESeedKR-Rg.ttf
+          weight: 500
+        - asset: assets/fonts/LINESeedKR-Bd.ttf
+          weight: 600
+        - asset: assets/fonts/LINESeedKR-Th.ttf
+          weight: 400
+    - family: line
+      fonts:
+        - asset: assets/fonts/LINESeedKR-Rg.ttf
+          weight: 500
+        - asset: assets/fonts/LINESeedKR-Bd.ttf
+          weight: 600
+        - asset: assets/fonts/LINESeedKR-Th.ttf
+          weight: 400
         # - asset: fonts/Schyler-Italic.ttf
         #   style: italic
   #   - family: Trajan Pro

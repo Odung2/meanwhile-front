@@ -9,6 +9,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 String baseUrl = "http://172.10.5.81:443";
 
+final defaultTextStyle = TextStyle(
+  fontFamily: 'line',
+  fontSize: 16,
+);
+
 class Bookmark {
   final String refLink;
   final String refTitle;
@@ -109,8 +114,10 @@ class _ScrapScreenState extends State<ScrapScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(10, height *0.02, 0, height *0.02),
                   child: Text(
+
                     "My bookmark list 😽",
                     style: TextStyle(
+
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),

@@ -96,8 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
     ),
     loadingSocialButtonColor: const Color(0xFF130101),
     loadingButtonColor: Colors.white,
-    privacyPolicyStyle: const TextStyle(fontFamily: "mainfont", color: Color(0xFF130101)),
-    privacyPolicyLinkStyle: const TextStyle(fontFamily: "mainfont",
+    privacyPolicyStyle: const TextStyle(fontFamily: "line", color: Color(0xFF130101)),
+    privacyPolicyLinkStyle: const TextStyle(fontFamily: "line",
         color: Color(0xFF130101), decoration: TextDecoration.underline),
   );
 
@@ -107,28 +107,28 @@ class _LoginScreenState extends State<LoginScreen> {
   LoginViewTheme get _mobileTheme => LoginViewTheme(
     logoSize: const Size(500, 400),
     welcomeTitleStyle: const TextStyle(
-      fontFamily: "mainfont",
+      fontFamily: "line",
       fontWeight: FontWeight.bold,
       fontSize: 40,
     ),
     welcomeDescriptionStyle: const TextStyle(
-      fontFamily: "mainfont",
+      fontFamily: "line",
       fontWeight: FontWeight.bold,
       fontSize: 30,
     ),
     changeActionTextStyle: const TextStyle(
-      fontFamily: "mainfont",
+      fontFamily: "line",
       fontSize: 20,
     ),
     useEmailStyle: const TextStyle(
-      fontFamily: "mainfont",
+      fontFamily: "line",
       fontSize: 18,
     ),
     actionButtonStyle: ButtonStyle(
         foregroundColor: MaterialStateProperty.all(const Color(0xFF130101)),
         textStyle: MaterialStateProperty.all<TextStyle>(
             const TextStyle(
-              fontFamily: "mainfont",
+              fontFamily: "line",
               fontSize: 25,
             )
         )
@@ -153,8 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
       AnimatedComponent(component: LoginComponents.formTitle),
       AnimatedComponent(component: LoginComponents.socialLogins),
     ],
-    privacyPolicyStyle: const TextStyle(fontFamily: "mainfont", color: Colors.white70),
-    privacyPolicyLinkStyle: const TextStyle(fontFamily: "mainfont",
+    privacyPolicyStyle: const TextStyle(fontFamily: "line", color: Colors.white70),
+    privacyPolicyLinkStyle: const TextStyle(fontFamily: "line",
         color: Colors.white, decoration: TextDecoration.underline),
   );
 

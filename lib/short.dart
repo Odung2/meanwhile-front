@@ -8,6 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String baseUrl = "http://172.10.5.81:443";
 bool showFloatingImage = false;
 
+final defaultTextStyle = TextStyle(
+  fontFamily: 'line',
+  fontSize: 16,
+);
+
 class ShortVideoObject {
   final String title;
   final String summary;

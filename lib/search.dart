@@ -10,6 +10,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 String baseUrl = "http://172.10.5.81:443";
 
+final defaultTextStyle = TextStyle(
+  fontFamily: 'line',
+  fontSize: 16,
+);
 
 class Article {
   // final String title;
@@ -172,7 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                     child: Text('국내 언론'),
                     style: ElevatedButton.styleFrom(
-                      primary: _selectedLanguage == 0 ? Colors.blueGrey : Colors.white24,
+                      primary: _selectedLanguage == 0 ? Color(0xffe2d2d2) : Colors.white24,
                     ),
                   ),
                   // style: ElevatedButton.styleFrom(
@@ -206,7 +210,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                     child: Text('외신'),
                     style: ElevatedButton.styleFrom(
-                      primary: _selectedLanguage == 1 ? Colors.blueGrey : Colors.white24,
+                      primary: _selectedLanguage == 1 ? Color(0xffbfc8d7) : Colors.white24,
                     ),
                   ),
                 ),
@@ -278,9 +282,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 alignment: alignment == Alignment.centerLeft
                   ? Alignment.centerLeft
                   : Alignment.centerRight,
+
                 child: Card(
+                  color: alignment == Alignment.centerLeft  ? Color(0xffe2d2d2):Color(0xffbfc8d7),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: Column(
                       children: [
                         Container(
@@ -295,6 +301,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 Text(
                                   "${article.summary}",
                                   style: const TextStyle(
+                                    fontFamily: "line",
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
@@ -305,6 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 Text(
                                   "${article.publishTime}",
                                   style: const TextStyle(
+                                    fontFamily: 'line',
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
@@ -324,6 +332,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.grey),
                                   borderRadius: BorderRadius.circular(16),
+                                  color: Colors.white70,
                                 ),
                                 child: Text(keyword),
                               ),
@@ -386,13 +395,7 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      // Text(
-                      //   '요약문',
-                      //   style: TextStyle(
-                      //     fontWeight: FontWeight.bold,
-                      //     fontSize: 24,
-                      //   ),
-                      // ),
+
                       Text(
                         '─── ･ ｡ﾟ☆: *.☽ .* :☆ﾟ. ───',
                         style: TextStyle(
@@ -403,13 +406,22 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                       Text(
                         '${widget.article.summary}',
                         style: TextStyle(
+                          fontFamily: 'line',
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
                       Text(
-                        'Publish Time: ${widget.article.publishTime ?? "N/A"}',
+                        '─── ･ ｡ﾟ☆: *.☽ .* :☆ﾟ. ───',
                         style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '${widget.article.publishTime ?? "N/A"}',
+                        style: TextStyle(
+                          fontFamily: 'line',
                           // fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -419,11 +431,15 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                 ),
 
                 SizedBox(height: 16),
-                Text(
-                  '요약문을 만들 때 참고한 기사 보기 🥸',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                  child: Text(
+                    '요약문을 만들 때 참고한 기사 보기 🥸',
+                    style: TextStyle(
+                      fontFamily: 'line',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
               ],
@@ -457,6 +473,7 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                               Text(
                                 refTitle,
                                 style: TextStyle(
+                                  fontFamily: 'line',
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
