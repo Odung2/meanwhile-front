@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/vertical_timeline.dart';
-import 'package:flutter_application_1/scraped.dart';
-import 'package:flutter_application_1/search.dart';
-import 'package:flutter_application_1/short.dart';
+import 'package:meanwhile/vertical_timeline.dart';
+import 'package:meanwhile/scraped.dart';
+import 'package:meanwhile/search.dart';
+import 'package:meanwhile/short.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 

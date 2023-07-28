@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/first_page.dart';
-import 'package:flutter_application_1/main.dart';
+import 'package:meanwhile/first_page.dart';
+import 'package:meanwhile/main.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dialog_builders.dart';
