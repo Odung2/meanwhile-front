@@ -17,6 +17,7 @@ class Article {
   final String publishTime;
   final List<String> references;
   final List<String> refTitle;
+  final List<String> keywords;
   final String imageLink;
   final List<bool> isLiked;
   final int langauge;
@@ -26,6 +27,7 @@ class Article {
     required this.publishTime,
     required this.references,
     required this.refTitle,
+    required this.keywords,
     required this.imageLink,
     required this.langauge,
     List<bool>? isLiked,
@@ -60,19 +62,19 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   // Function to fetch articles from the Spring Boot server
-  Future<void> _fetchArticles(String keywords) async {
+  Future<void> _fetchArticles(String query) async {
     // final keywords = _searchController.text; // 검색어 가져오기
     // final keywords = keywords; // 검색어 가져오기
 
-    print(keywords);
+    print(query);
     final queryParams = {
-      'keywords': keywords.isNotEmpty ? keywords : 'default_keywords_here' // 검색어가 비어있으면 기본 값 전달
+      'keywords': query.isNotEmpty ? query : 'default_keywords_here' // 검색어가 비어있으면 기본 값 전달
     };
 
     final uri = Uri.http('172.10.5.81:443', '/search', queryParams); // 쿼리 파라미터를 포함한 URL 생성
     // final uri = Uri.http('127.0.0.1:8080', '/articles', queryParams); // 쿼리 파라미터를 포함한 URL 생성
 
-    final request = '$baseUrl/search?query="$keywords"';
+    final request = '$baseUrl/search?query="$query"';
     try {
       print(request);
       final response = await http.get(Uri.parse(request));
@@ -86,13 +88,16 @@ class _SearchScreenState extends State<SearchScreen> {
           Article article = Article(
             // title: item['articleId'],
             summary: item['summary'],
-            publishTime: item['publishTime'],
-            references: List<String>.from(item['references'] ?? []),
-            refTitle: List<String>.from (item['refTitles'] ?? []),
-            imageLink: item['imageLink'],
-            langauge: item['language'],
+            publishTime: item['date'],
+            references: List<String>.from(item['refs'] ?? []),
+            refTitle: List<String>.from (item['title'] ?? []),
+            keywords: List<String>.from(item['keywords'] ?? []),
+            imageLink: item['url'],
+            langauge: item['lang'],
           );
           articles.add(article);
+          print("keywords: ");
+          print(article.keywords);
         }
         print(articles);
         setState(() {
@@ -110,40 +115,6 @@ class _SearchScreenState extends State<SearchScreen> {
       print('Error: $e');
     }
   }
-
-  // Function to search articles on Spring Boot server
-  // Future<void> _searchArticles(String keyword) async {
-  //
-  //   final request = '$baseUrl/articles?keywords=$keyword';
-  //   // final request = '$baseUrl/articles';
-  //   try {
-  //     final response = await http.get(Uri.parse(request));
-  //     if (response.statusCode == 200) {
-  //       final jsonData = json.decode(response.body);
-  //       List<Article> articles = [];
-  //       for (var item in jsonData) {
-  //         Article article = Article(
-  //             // title: item['title'],
-  //             summary: item['summary'],
-  //             publishTime: item['publishTime'],
-  //             references: item['references'],
-  //             refTitle: item['refTitles'],
-  //             imageLink: item['imageLink']
-  //         );
-  //         articles.add(article);
-  //       }
-  //       setState(() {
-  //         _articles = articles;
-  //       });
-  //     } else {
-  //       // Handle error if the server request fails
-  //       print('Failed to fetch articles. Error: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     // Handle any other errors that may occur during the request
-  //     print('Error: $e');
-  //   }
-  // }
 
 
   @override
@@ -308,42 +279,58 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? Alignment.centerLeft
                   : Alignment.centerRight,
                 child: Card(
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment:alignment == Alignment.centerLeft
-                          ? CrossAxisAlignment.start
-                          :  CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "${article.summary}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment:alignment == Alignment.centerLeft
+                                ? CrossAxisAlignment.start
+                                :  CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "${article.summary}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height*0.01,
+                                ),
+                                Text(
+                                  "${article.publishTime}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            height: height*0.01,
-                          ),
-                          Text(
-                            "${article.publishTime}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          // Text(
-                          //   " 참고 기사 더보기",
-                          //   style: const TextStyle(
-                          //     // fontWeight: FontWeight.bold,
-                          //     fontSize: 12,
-                          //   ),
-                          // ),
-                        ],
-                      ),
+                        ),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 12.0,
+                          children: article.keywords.map((keyword) {
+                            return GestureDetector(
+                              // onTap: () => _onKeywordSelected(keyword),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(keyword),
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -507,35 +494,7 @@ class _ArticleDetailsScreenState extends State<ArticleDetailsScreen> {
                       ),
                     ),
                   )
-                  // ListTile(
-                  //   title: Text(refTitle),
-                  //   subtitle: Text(reference),
-                  //   trailing: Row(
-                  //     mainAxisSize: MainAxisSize.min,
-                  //     children: [
-                  //       IconButton(
-                  //         icon: Icon(
-                  //           isLiked
-                  //               ? Icons.favorite
-                  //               : Icons.favorite_border,
-                  //           color: isLiked ? Colors.red : null,
-                  //         ),
-                  //         onPressed: () {
-                  //           _toggleLike(index);
-                  //         },
-                  //       ),
-                  //       IconButton(
-                  //         icon: Icon(
-                  //           FontAwesomeIcons.twitter,
-                  //           color: Colors.blue,
-                  //         ),
-                  //         onPressed: () {
-                  //           _shareOnTwitter(reference, refTitle);
-                  //         },
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+
                 );
               },
             ),
