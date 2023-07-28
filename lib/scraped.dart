@@ -150,7 +150,7 @@ class _ScrapScreenState extends State<ScrapScreen> {
                           children: [
                             const SizedBox(height: 8),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start, // Adjust crossAxisAlignment
+                               // Adjust crossAxisAlignment
                               children: [
                                 Flexible(
                                   child: GestureDetector(
@@ -169,6 +169,7 @@ class _ScrapScreenState extends State<ScrapScreen> {
                                         Text(
                                           "${item.refTitle}",
                                           style: const TextStyle(
+                                            fontFamily: 'line',
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18,
                                           ),
@@ -179,6 +180,7 @@ class _ScrapScreenState extends State<ScrapScreen> {
                                         Text(
                                           "${item.refLink}",
                                           style: const TextStyle(
+                                            fontFamily: 'line',
                                             fontSize: 16,
                                           ),
                                           maxLines: 2,
@@ -188,51 +190,58 @@ class _ScrapScreenState extends State<ScrapScreen> {
                                     ),
                                   ),
                                 ),
-                                IconButton(
-                                  icon: Icon(
-                                    FontAwesomeIcons.twitter,
-                                    color: Colors.blue,
-                                  ),
-                                  onPressed: () {
-                                    _shareOnTwitter(item.refLink, item.refTitle);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    final confirmDelete = await showDialog<bool>(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text("항목 삭제"),
-                                          content: Text("해당 항목을 삭제하시겠습니까?"),
-                                          actions: [
-                                            TextButton(
-                                              child: Text("취소"),
-                                              onPressed: () {
-                                                Navigator.of(context).pop(false);
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: Text("삭제"),
-                                              onPressed: () {
-                                                Navigator.of(context).pop(true);
-                                              },
-                                            ),
-                                          ],
-                                        );
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        FontAwesomeIcons.twitter,
+                                        color: Colors.blue,
+                                      ),
+                                      onPressed: () {
+                                        _shareOnTwitter(item.refLink, item.refTitle);
                                       },
-                                    );
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () async {
+                                        final confirmDelete = await showDialog<bool>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text("항목 삭제"),
+                                              content: Text("해당 항목을 삭제하시겠습니까?"),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text("취소"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(false);
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text("삭제"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(true);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
 
-                                    if (confirmDelete == true) {
-                                      // 삭제 확인 후, 항목 삭제 로직을 실행합니다.
-                                      deleteBookmark(item); // 삭제 함수 호출
-                                      setState(() {
-                                        bookmarks.removeAt(index); // 리스트에서 항목 삭제
-                                      });
-                                    }
-                                  },
+                                        if (confirmDelete == true) {
+                                          // 삭제 확인 후, 항목 삭제 로직을 실행합니다.
+                                          deleteBookmark(item); // 삭제 함수 호출
+                                          setState(() {
+                                            bookmarks.removeAt(index); // 리스트에서 항목 삭제
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
+
                               ],
                             ),
                           ],
