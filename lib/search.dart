@@ -8,12 +8,16 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'loading_indicator.dart';
+
 String baseUrl = "http://172.10.5.81:443";
 
 final defaultTextStyle = TextStyle(
   fontFamily: 'line',
   fontSize: 16,
 );
+
+bool _isLoading = false;
 
 class Article {
   // final String title;
@@ -69,6 +73,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _fetchArticles(String query) async {
     // final keywords = _searchController.text; // 검색어 가져오기
     // final keywords = keywords; // 검색어 가져오기
+    setState(() {
+      _isLoading = true; // Show the loading indicator when the function starts execution
+    });
+
+    await Future.delayed(Duration(seconds: 10));
 
     print(query);
     final queryParams = {
@@ -109,6 +118,7 @@ class _SearchScreenState extends State<SearchScreen> {
           _koreanArticles = articles.where((article) => article.langauge == 0).toList();
           _allArticles = articles;
           _englishArticles = articles.where((article) => article.langauge == 1).toList();
+          _isLoading  = false;
         });
       } else {
         // Handle error if the server request fails
@@ -127,7 +137,9 @@ class _SearchScreenState extends State<SearchScreen> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       // appBar: AppBar(title: Text('Article Search')),
-      body: Padding(
+      body: _isLoading
+          ? const LoadingIndicator() // Show the loading indicator with custom message
+          : Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
