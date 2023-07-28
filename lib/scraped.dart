@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String baseUrl = "http://172.10.5.135:443";
+String baseUrl = "http://172.10.5.81:443";
 
 class Bookmark {
   final String refLink;

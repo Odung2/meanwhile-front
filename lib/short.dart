@@ -36,7 +36,7 @@ class ShortVideoObject {
 }
 
 Future<List<ShortVideoObject>> fetchVideoObjects() async {
-  final response = await http.get(Uri.parse('$url/trending'));
+  final response = await http.get(Uri.parse('$baseUrl/trending'));
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
