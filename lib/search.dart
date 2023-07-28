@@ -181,8 +181,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   hintText: '검색어를 입력하세요',
                   border: OutlineInputBorder(),
                 ),
-                onSubmitted: (keyword) {
-                  _fetchArticles(keyword); // 검색 수행
+                onSubmitted: (keyword) async {
+                  await _fetchArticles(keyword); // 검색 수행
                 },
               ),
             ),

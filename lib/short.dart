@@ -5,7 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String url = "http://172.10.5.135:443";
+const String urlS = "http://172.10.5.135:443";
 const String baseUrl = "http://172.10.5.81:443";
 bool showFloatingImage = false;
 
@@ -36,7 +36,7 @@ class ShortVideoObject {
 }
 
 Future<List<ShortVideoObject>> fetchVideoObjects() async {
-  final response = await http.get(Uri.parse('$url/trending'));
+  final response = await http.get(Uri.parse('$urlS/trending'));
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
@@ -364,7 +364,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 }
 
 Future<void> sendLikeData(String refTitle, String refLink) async {
-  final url = '$baseUrl/add_bookmark'; // 좋아요 정보를 전송할 엔드포인트 URL
+  final url = '$urlS/add_bookmark'; // 좋아요 정보를 전송할 엔드포인트 URL
   final String? jwtUtilToken = await getJwtToken();
 
   final requestData = {
